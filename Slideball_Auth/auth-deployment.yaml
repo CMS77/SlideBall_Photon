@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: gustavo12321/auth:latest
+        env:
+          - name: DB_HOST
+            value: postgresql-master
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_NAME
+            value: slideball
+          - name: DB_USER
+            value: postgres
+          - name: DB_PASSWORD
+            value: postgres
+    
+        ports:
+        - containerPort: 8080

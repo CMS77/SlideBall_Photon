@@ -1,0 +1,49 @@
+version: "3"
+services:
+  postgresql-master:
+    image: bitnami/postgresql
+    restart: always
+    ports:
+      - '54321:5432'
+    volumes:
+      - "postgresql_master_data:/bitnami/postgresql"
+      - "./BD_scripts/bdCreate.sql:/docker-entrypoint-initdb.d/init.sql"
+    environment:
+      - POSTGRESQL_PGAUDIT_LOG=READ,WRITE
+      - POSTGRESQL_LOG_HOSTNAME=true
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=postgres
+      - POSTGRESQL_REPLICATION_PASSWORD=postgres
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=slideball
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - slideball
+  postgresql-slave:
+    image: bitnami/postgresql
+    restart: always
+    ports:
+      - '5432'
+    depends_on:
+      - postgresql-master
+    environment:
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_MASTER_HOST=postgresql-master
+      - POSTGRESQL_PGAUDIT_LOG=READ
+      - POSTGRESQL_LOG_HOSTNAME=true
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=postgres
+      - POSTGRESQL_REPLICATION_PASSWORD=postgres
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - slideball
+volumes:
+  postgresql_master_data:
+    driver: local
+
+networks:
+  slideball:
+    # Use a custom driver
+    driver: bridge

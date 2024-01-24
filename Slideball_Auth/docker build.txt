@@ -1,0 +1,5 @@
+docker build -t auth2 .    (Para bildar a imagem apos alterações no back também deve ser rodado dentro da pasta auth)
+docker run -d --env-file .\.env -p 8081:8080 --name backend --network slideball_auth_slideball auth2:latest (para subir o servidor)
+
+
+docker-compose up -d (Para subir o banco, rodar dentro da pasta Auth)
